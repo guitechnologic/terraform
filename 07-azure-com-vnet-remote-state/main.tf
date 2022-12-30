@@ -30,3 +30,8 @@ data "terraform_remote_state" "vnet" {
     key                  = "azure-vnet/terraform.tfstate"
   }
 }
+#terraform init
+#terraform validate
+#terraform plan -out=plan.out
+#terraform apply plan.out 
+#terraform destroy
