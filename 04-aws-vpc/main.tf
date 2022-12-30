@@ -10,7 +10,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "danielgil-remote-state"
+    bucket = "guilherme-remote-state"
     key    = "aws-vpc/terraform.tfstate"
     region = "eu-central-1"
   }
@@ -21,7 +21,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      owner      = "danielgil"
+      owner      = "guilherme"
       managed-by = "terraform"
     }
   }

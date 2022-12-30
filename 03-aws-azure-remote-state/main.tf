@@ -20,7 +20,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      owner      = "danielgil"
+      owner      = "guilherme"
       managed-by = "terraform"
     }
   }

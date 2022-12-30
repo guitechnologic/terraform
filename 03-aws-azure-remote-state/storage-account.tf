@@ -6,7 +6,7 @@ resource "azurerm_resource_group" "first_resource_group" {
 }
 
 resource "azurerm_storage_account" "first_storage_account" {
-  name                     = "danielgilremotestate"
+  name                     = "guilhermeremotestate"
   resource_group_name      = azurerm_resource_group.first_resource_group.name
   location                 = var.location
   account_tier             = var.account_tier

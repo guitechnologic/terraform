@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "first_bucket" {
-  bucket = "danielgil-remote-state"
+  bucket = "guilherme-remote-state"
 
   versioning {
     enabled = true
