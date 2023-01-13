@@ -128,7 +128,7 @@ stages:
             displayName: Download Azure public key
             inputs:
               secureFile: azure-key.pub
-          - script: |
+          - script:
               terraform init
               terraform destroy -auto-approve
             displayName: Terraform Destroy
