@@ -9,18 +9,18 @@ variables:
 
 stages:
   - stage: validate
-    displayName: Terraform alidate
-    jobs: 
+    displayName: Terraform Validate
+    jobs:
       - job: validate
-        displayName: Terraform validate
+        displayName: Terraform Validate
         steps:
-          - script:
+          - script: |
               terraform init
               terraform validate
             displayName: Terraform Validate
             env:
               AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY) 
+              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
               ARM_CLIENT_ID: $(ARM_CLIENT_ID)
               ARM_TENANT_ID: $(ARM_TENANT_ID)
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
@@ -28,7 +28,7 @@ stages:
 
   - stage: plan
     displayName: Terraform Plan
-    jobs: 
+    jobs:
       - job: plan
         displayName: Terraform Plan
         steps:
@@ -36,19 +36,19 @@ stages:
             name: aws_pub_key
             displayName: Download AWS public key
             inputs:
-              secureFile: aws_key.pub
+              secureFile: aws-key.pub
           - task: DownloadSecureFile@1
             name: azure_pub_key
             displayName: Download Azure public key
             inputs:
-              secureFile: azure_key.pub
-          - script:
+              secureFile: azure-key.pub
+          - script: |
               terraform init
               terraform plan -out=plan.out
-            displayName: Terraform plan
+            displayName: Terraform Plan
             env:
               AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY) 
+              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
               ARM_CLIENT_ID: $(ARM_CLIENT_ID)
               ARM_TENANT_ID: $(ARM_TENANT_ID)
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
@@ -61,7 +61,7 @@ stages:
 
   - stage: approve_apply
     displayName: Approve Apply
-    jobs: 
+    jobs:
       - job: approve_apply
         pool: server
         displayName: Approve Apply
@@ -69,20 +69,9 @@ stages:
           - task: ManualValidation@0
             timeoutInMinutes: 10
 
-
-  - stage: approve_destroy
-    displayName: Approve Destroy
-    jobs: 
-      - job: approve_destroy
-        pool: server
-        displayName: Approve Destroy
-        steps:
-          - task: ManualValidation@0
-            timeoutInMinutes: 10
-
   - stage: apply
     displayName: Terraform Apply
-    jobs: 
+    jobs:
       - job: apply
         displayName: Terraform Apply
         steps:
@@ -90,22 +79,22 @@ stages:
             name: aws_pub_key
             displayName: Download AWS public key
             inputs:
-              secureFile: aws_key.pub
+              secureFile: aws-key.pub
           - task: DownloadSecureFile@1
             name: azure_pub_key
             displayName: Download Azure public key
             inputs:
-              secureFile: azure_key.pub
+              secureFile: azure-key.pub
           - download: current
             artifact: plan
-            displayName: Download Apply
-          - script:
+            displayName: Download Plan
+          - script: |
               terraform init
               terraform apply $(Pipeline.Workspace)/plan/plan.out
             displayName: Terraform Apply
             env:
               AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY) 
+              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
               ARM_CLIENT_ID: $(ARM_CLIENT_ID)
               ARM_TENANT_ID: $(ARM_TENANT_ID)
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
@@ -113,10 +102,19 @@ stages:
               TF_VAR_aws_pub_key: $(aws_pub_key.secureFilePath)
               TF_VAR_azure_pub_key: $(azure_pub_key.secureFilePath)
 
-  
+  - stage: approve_destroy
+    displayName: Approve Destroy
+    jobs:
+      - job: approve_destroy
+        pool: server
+        displayName: Approve Destroy
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 10
+
   - stage: destroy
     displayName: Terraform Destroy
-    jobs: 
+    jobs:
       - job: destroy
         displayName: Terraform Destroy
         steps:
@@ -124,22 +122,19 @@ stages:
             name: aws_pub_key
             displayName: Download AWS public key
             inputs:
-              secureFile: aws_key.pub
+              secureFile: aws-key.pub
           - task: DownloadSecureFile@1
             name: azure_pub_key
             displayName: Download Azure public key
             inputs:
-              secureFile: azure_key.pub
-          - download: current
-            artifact: plan
-            displayName: Download Plan
-          - script:
+              secureFile: azure-key.pub
+          - script: |
               terraform init
               terraform destroy -auto-approve
             displayName: Terraform Destroy
             env:
               AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY) 
+              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
               ARM_CLIENT_ID: $(ARM_CLIENT_ID)
               ARM_TENANT_ID: $(ARM_TENANT_ID)
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
